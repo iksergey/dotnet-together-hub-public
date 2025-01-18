@@ -1,0 +1,635 @@
+{
+    "info": {
+        "_postman_id": "9fed4a4c-8f0f-4b1c-b89f-38cdc968089e",
+        "name": "Together Hub API - Платформа для создания и управления топиками",
+        "description": "## Коллекция для тестирования API социальной платформы Together Hub.\n\n**Содержит эндпоинты аутентификации, управления топиками и комментариями**",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "39603735"
+    },
+    "item": [
+        {
+            "name": "/topics",
+            "item": [
+                {
+                    "name": "/topics",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const response = pm.response.json();",
+                                    "",
+                                    "if (response.topics && response.topics.length > 0) {",
+                                    "    pm.collectionVariables.set(\"firstTopicId\", response.topics[0].id);",
+                                    "    console.log(\"Первый ID топика сохранен: \" + response.topics[0].id);",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/topics",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics"
+                            ]
+                        },
+                        "description": "Получение списка всех доступных топиков. Возвращает массив топиков с базовой информацией"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/topic",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/topics/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Получение детальной информации о конкретном топике по его идентификатору. Возвращает полную информацию о топике"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/create",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "var moment = require('moment');",
+                                    "",
+                                    "const titles = [",
+                                    "    \"Технологические тренды\",",
+                                    "    \"Будущее технологий\", ",
+                                    "    \"Инновации 2030\",",
+                                    "    \"Прорывные технологии\",",
+                                    "    \"Технологии и общество\"",
+                                    "];",
+                                    "",
+                                    "const summaries = [",
+                                    "    \"Обзор ключевых технологических инноваций\",",
+                                    "    \"Анализ будущих трендов\",",
+                                    "    \"Влияние технологий на общество\",",
+                                    "    \"Ключевые достижения в науке\",",
+                                    "    \"Технологические вызовы будущего\"",
+                                    "];",
+                                    "",
+                                    "const topicTypes = [",
+                                    "    \"Конференция\",",
+                                    "    \"Семинар\", ",
+                                    "    \"Вебинар\",",
+                                    "    \"Круглый стол\",",
+                                    "    \"Мастер-класс\"",
+                                    "];",
+                                    "",
+                                    "const locations = [",
+                                    "    { street: \"Кутузовский проспект, 36\", city: \"Смоленск\" },",
+                                    "    { street: \"Невский проспект, 22\", city: \"Вязьма\" },",
+                                    "    { street: \"Ленина, 10\", city: \"Миинск\" },",
+                                    "    { street: \"Проспект Мира, 15\", city: \"Кострома\" },",
+                                    "    { street: \"Тверская, 7\", city: \"Плёс\" }",
+                                    "];",
+                                    "",
+                                    "const randomDate = moment.utc()",
+                                    "    .year(Math.floor(Math.random() * (2035 - 2027 + 1)) + 2027)",
+                                    "    .month(Math.floor(Math.random() * 12))",
+                                    "    .date(Math.floor(Math.random() * 28) + 1)",
+                                    "    .hour(Math.floor(Math.random() * 24))",
+                                    "    .minute(Math.floor(Math.random() * 60))",
+                                    "    .second(0)",
+                                    "    .millisecond(0);",
+                                    "",
+                                    "const randomTitle = titles[Math.floor(Math.random() * titles.length)];",
+                                    "const randomSummary = summaries[Math.floor(Math.random() * summaries.length)];",
+                                    "const randomTopicType = topicTypes[Math.floor(Math.random() * topicTypes.length)];",
+                                    "const randomLocation = locations[Math.floor(Math.random() * locations.length)];",
+                                    "",
+                                    "pm.environment.set('title', randomTitle);",
+                                    "pm.environment.set('summary', randomSummary);",
+                                    "pm.environment.set('topicType', randomTopicType);",
+                                    "pm.environment.set('locationStreet', randomLocation.street);",
+                                    "pm.environment.set('locationCity', randomLocation.city);",
+                                    "pm.environment.set('currentDateTime', randomDate.format('YYYY-MM-DDTHH:mm:ss'));",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const topic = pm.response.json();",
+                                    "",
+                                    "if (topic) {",
+                                    "    pm.collectionVariables.set(\"firstTopicId\", topic.id);",
+                                    "    console.log(\"Первый ID топика сохранен: \" + topic.id);",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"{{title}}\",\n  \"eventStart\": \"{{currentDateTime}}\",\n  \"summary\": \"{{summary}}\",\n  \"topicType\": \"{{topicType}}\",\n  \"location\": {\n    \"street\": \"{{locationStreet}}\",\n    \"city\": \"{{locationCity}}\"\n  }\n}\n",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{host}}/api/topics/",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                ""
+                            ]
+                        },
+                        "description": "Создание нового топика. Требует передачи полной информации: заголовок, дата события, краткое описание, тип события и локация"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/update",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Обновлено: Технологические тренды 2035\",\n  \"eventStart\": \"2135-01-15T10:00:00\",\n  \"summary\": \"Обновлено: Обзор ключевых технологических инноваций\",\n  \"topicType\": \"Обновлено: Тип\",\n  \"location\": {\n    \"street\": \"Обновлено: Кутузовский проспект, 36\",\n    \"city\": \"Обновлено: Москва\"\n  }\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{host}}/api/topics/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Обновление существующего топика. Позволяет изменить любые параметры: заголовок, дату, описание, тип и место проведения"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/delete",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/topics/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Удаление топика по его идентификатору.\n\n\\*Доступно только авторизованным пользователям с соответствующими правами"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/{id}/join",
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/topics/join/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "topics",
+                                "join",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Несколько сценариев\n\nДля создателя топика:\n\n- Закрытие топика, если активен\n    \n- Открытие топика, если закрыт\n    \n\nДля обычного пользователя:\n\n- Регистрация участия текущего пользователя в выбранном топике если ещё не зарегистрирован\n    \n- Отмена участия в выбранном топике если уже зарегистрирован"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Работа с комментариями.\n\nНа первых итерациях не требует авторизации",
+            "auth": {
+                "type": "bearer",
+                "bearer": [
+                    {
+                        "key": "token",
+                        "value": "{{jwtToken}}",
+                        "type": "string"
+                    }
+                ]
+            },
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "exec": [
+                            ""
+                        ]
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "type": "text/javascript",
+                        "packages": {},
+                        "exec": [
+                            ""
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "/auth",
+            "item": [
+                {
+                    "name": "/register",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 && ",
+                                    "    pm.response.json() && ",
+                                    "    pm.response.json().result.jwtToken) {",
+                                    "    ",
+                                    "    pm.collectionVariables.set(\"jwtToken\", pm.response.json().result.jwtToken);",
+                                    "    ",
+                                    "    console.clear();",
+                                    "    console.log(\"✅ json:  \"+ pm.response.json().result.jwtToken);",
+                                    "    console.log(\"🔑 Токен: \" + pm.collectionVariables.get(\"jwtToken\"));",
+                                    "} else {",
+                                    "    console.error(\"❎ JWT Token не найден\");",
+                                    "    console.error(\"Статус ответа: \" + pm.response.code);",
+                                    "    console.error(\"Тело ответа: \" + pm.response.json());",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"FullName\": \"Сергей Ка.\",\n  \"Username\": \"Serenya\",\n  \"Email\": \"i@ksergey.ru\",\n  \"Password\": \"1111\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{host}}/api/Auth/register",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "Auth",
+                                "register"
+                            ]
+                        },
+                        "description": "Регистрация нового пользователя в системе. Принимает полное имя, username, email и пароль. При успешной регистрации возвращает JWT-токен для дальнейшей аутентификации"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "if (pm.response.code === 200 && ",
+                                    "    pm.response.json() && ",
+                                    "    pm.response.json().result.jwtToken) {",
+                                    "    ",
+                                    "    pm.collectionVariables.set(\"jwtToken\", pm.response.json().result.jwtToken);",
+                                    "    ",
+                                    "    console.clear();",
+                                    "    console.log(\"✅ json:  \"+ pm.response.json().result.jwtToken);",
+                                    "    console.log(\"🔑 Токен: \" + pm.collectionVariables.get(\"jwtToken\"));",
+                                    "} else {",
+                                    "    console.error(\"❎ JWT Token не найден\");",
+                                    "    console.error(\"Статус ответа: \" + pm.response.code);",
+                                    "    console.error(\"Тело ответа: \" + pm.response.json());",
+                                    "}",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        },
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"Email\": \"user1@example.com\",\n  // \"Email\": \"i@ksergey.ru\",\n  \"Password\": \"1111\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{host}}/api/Auth/login",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "Auth",
+                                "login"
+                            ]
+                        },
+                        "description": "Аутентификация пользователя по email и паролю. Возвращает JWT-токен для доступа к защищенным эндпоинтам приложения"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Создание и аутентификация учётной записи с получением JWT токена"
+        },
+        {
+            "name": "comments",
+            "item": [
+                {
+                    "name": "/{id}",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwtToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/comments/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "comments",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Получение всех комментариев для конкретного топика. Возвращает список комментариев с информацией об авторах.\n\nТребует авторизации"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/{id}",
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "exec": [
+                                    "pm.collectionVariables.set(",
+                                    "  \"shortUUID\", ",
+                                    "  pm.collectionVariables.replaceIn('{{$guid}}').slice(0, 10)",
+                                    ");",
+                                    ""
+                                ],
+                                "type": "text/javascript",
+                                "packages": {}
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwtToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"Text\":\"Текст комментария {{shortUUID}}\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{host}}/api/comments/{{firstTopicId}}",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "comments",
+                                "{{firstTopicId}}"
+                            ]
+                        },
+                        "description": "Добавление нового комментария к выбранному топику.\n\nТребует авторизации и передачи текста комментария"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Работа с комментариями"
+        },
+        {
+            "name": "test",
+            "item": [
+                {
+                    "name": "/test1",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwtToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/test/test1",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "test",
+                                "test1"
+                            ]
+                        },
+                        "description": "Первый метод для тестов авторизации"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "/test2",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{jwtToken}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{host}}/api/test/test2",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "path": [
+                                "api",
+                                "test",
+                                "test2"
+                            ]
+                        },
+                        "description": "Второй метод для тестов авторизации"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Тестовые эндпоинты"
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "host",
+            "value": "http://localhost:5001",
+            "type": "string"
+        },
+        {
+            "key": "jwtToken",
+            "value": ""
+        },
+        {
+            "key": "firstTopicId",
+            "value": ""
+        },
+        {
+            "key": "shortUUID",
+            "value": ""
+        }
+    ]
+}
